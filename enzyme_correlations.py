@@ -17,6 +17,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+plot_only_lt = True
+
 # Import data:
 
 enzyme_names = []
@@ -75,8 +77,15 @@ enzyme_correlation_matrix = np.zeros((len(enzyme_list),len(enzyme_list)))
 
 for i in range(len(enzyme_matrix_columns)):
     for j in range(len(enzyme_matrix_columns)):
-        enzyme_correlation_matrix[i][j] = enzyme_list[i].corr(
-            enzyme_list[j]).round(decimals=2)
+        if i >= j:
+            enzyme_correlation_matrix[i][j] = enzyme_list[i].corr(
+                enzyme_list[j]).round(decimals=2)
+        else:
+            if plot_only_lt is True:
+                enzyme_correlation_matrix[i][j] = 0
+            else:
+                enzyme_correlation_matrix[i][j] = enzyme_list[i].corr(
+                    enzyme_list[j]).round(decimals=2)
 
 # Plot correlation matrix:
 
@@ -84,6 +93,9 @@ fig, ax = plt.subplots()
 im = ax.imshow(enzyme_correlation_matrix, aspect='auto', cmap='bwr')
 im.set_clim(-1, 1)
 ax.grid(False)
+if plot_only_lt is True:
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 ax.xaxis.set(ticks=tuple(np.arange(0, len(enzyme_list), 1)),
              ticklabels=enzyme_matrix_columns)
 plt.xticks(rotation=45)
@@ -92,8 +104,15 @@ ax.yaxis.set(ticks=tuple(np.arange(0, len(enzyme_list), 1)),
 ax.set_ylim(len(enzyme_list)-0.5, -0.5)
 for i in range(len(enzyme_list)):
     for j in range(len(enzyme_list)):
+        if i < j:
+            if plot_only_lt is True:
+                color = 'white'
+            else:
+                color = 'black'
+        else:
+            color = 'black'
         ax.text(j, i, enzyme_correlation_matrix[i][j], ha='center',
-                va='center', color='black', size=9)
+                va='center', color=color, size=9)
 plt.rcParams.update({'font.size': 9})
 cbar = ax.figure.colorbar(im, ax=ax, format='% .2f')
 plt.show()
