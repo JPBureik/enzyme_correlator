@@ -1,0 +1,4 @@
+- dreiecksform ohne diagonale
+- histogramm korrelationen vs anzahl der enzyme
+- damit gruppierung von enzymen mit paarweiseer korrelation über mindestwert
+
