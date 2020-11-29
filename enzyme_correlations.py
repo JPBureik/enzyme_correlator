@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
+plot_1d_data = False
 plot_only_lt = True
 
 # Import data:
@@ -44,8 +45,6 @@ df.index = enzyme_names
 
 df = df.T
 
-# Plot radar plots as 1D graphs:
-
 x_axis = np.arange(0,len(x_axis_labels),1)
 
 enzyme_list = []
@@ -53,13 +52,17 @@ enzyme_list = []
 for enzyme in df:
     enzyme_list.append(df[enzyme])
 
-# plt.figure()
-# for enzyme in enzyme_list:
-#     label = enzyme.name
-#     ax = enzyme.plot(xticks=x_axis, label=label)
-#     ax.set_xticklabels(x_axis_labels)
-# ax.legend()
-# plt.show()
+# Plot radar plots as 1D graphs:
+
+if plot_1d_data is True:
+    
+    plt.figure()
+    for enzyme in enzyme_list:
+        label = enzyme.name
+        ax = enzyme.plot(xticks=x_axis, label=label)
+        ax.set_xticklabels(x_axis_labels)
+    ax.legend()
+    plt.show()
 
 # Define columns for correlation matrix:
 
@@ -116,3 +119,82 @@ for i in range(len(enzyme_list)):
 plt.rcParams.update({'font.size': 9})
 cbar = ax.figure.colorbar(im, ax=ax, format='% .2f')
 plt.show()
+
+#%% Compute histogram:
+    
+hist_list = []
+
+for i in range(len(enzyme_matrix_columns)):
+    for j in range(len(enzyme_matrix_columns)):
+        if i > j:
+            hist_list.append(enzyme_correlation_matrix[i][j])
+    
+binsize = 0.05
+
+hist_axis = np.arange(-1, 1.1, binsize)
+
+plt.figure()
+
+hist = plt.hist(hist_list, bins=hist_axis, histtype='stepfilled')
+plt.xticks(hist_axis)
+plt.yticks(np.arange(0, 25, 2))
+plt.grid(True)
+plt.grid(color='black', linestyle=':', linewidth=0.25)
+plt.xlabel('Correlation of activity between enzyme pairs')
+plt.ylabel('Occurrence')
+
+plt.show()
+
+#%%
+
+# cutoff = 0.85
+
+# grouping = []
+
+# for i in range(len(enzyme_matrix_columns)):
+#     for j in range(len(enzyme_matrix_columns)):
+#         if i > j:
+#             if enzyme_correlation_matrix[i][j] >= cutoff:
+#                 grouping.append((i, j))
+                
+# # for i in range(len(grouping)): print(enzyme_correlation_matrix[grouping[i]])
+
+# grouped_pairs = []       
+# grouped_pairs_decoupled = []
+    
+
+# for i in range(len(grouping)):
+#     p1, p2 = grouping[i]
+#     grouped_pairs.append((enzyme_list[p1].name, enzyme_list[p2].name))
+    
+# g1 = set()
+# g2 = set()
+# g3 = set()
+# g4 = set()
+
+# g1.add(('CYP2A7',))
+# g2.add(('CYP2D6',))
+# g3.add(('CYP3A4',))
+# g4.add(('CYP3A43',))
+
+# sets = [g1, g2, g3, g4]
+
+# def corr_check(enzyme1, enzyme2):
+#     correl_boolean = False
+#     for i in range(len(grouped_pairs)):
+#         if grouped_pairs[i] == (enzyme1, enzyme2) or grouped_pairs[i] == (enzyme2, enzyme1):
+#             correl_boolean = True
+#         elif enzyme1 == enzyme2:
+#             correl_boolean = True
+#     return correl_boolean
+
+# for i in range(len(grouped_pairs)):
+#     for j in (0,1):
+#         new_enzyme = grouped_pairs[i][j]
+#         for group in sets:
+#             for member in group:
+#                 if corr_check(new_enzyme, member[0]) is True:
+#                     group.add((new_enzyme,))
+    
+
+
