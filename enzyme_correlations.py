@@ -148,22 +148,68 @@ plt.ylabel('Occurrence')
 
 plt.show()
 
-#%%
+#%% Sort into groups:
 
-# cutoff = 0.85 # -» slider
+cutoff = 0.85 # inclusive; -> slider
 
+def corr_check(enzyme1, enzyme2):
+    if (enzyme1.corr(enzyme2) >= cutoff and enzyme1.name != enzyme2.name):
+        return True
+    else:
+        return False
+   
+# Set of all enzymes that have at least one correlation above cutoff with another enzyme:
+correlating_enzymes = set()
+for enzyme1 in enzyme_list:
+    for enzyme2 in enzyme_list:
+        if corr_check(enzyme1, enzyme2):
+            correlating_enzymes.add(enzyme1.name)
+            correlating_enzymes.add(enzyme2.name)
 
-
-# def corr_check(enzyme1, enzyme2):
-#     if corr(enzyme1, enzyme2) 
-
-# for i in range(len(grouped_pairs)):
-#     for j in (0,1):
-#         new_enzyme = grouped_pairs[i][j]
-#         for group in sets:
-#             for member in group:
-#                 if corr_check(new_enzyme, member[0]) is True:
-#                     group.add((new_enzyme,))
+# Parse into mutually disjunct subsets:
     
+grouped = {}
+set_counter = 0
+correlating_enzymes = list(correlating_enzymes)
 
+for first in correlating_enzymes:
+    for new_partner in correlating_enzymes:
+        if corr_check(df[first], df[new_partner]):
+            # If one partner already belongs to a group -> carry over:
+            if (new_partner in grouped.keys() and first not in grouped.keys()):
+                grouped[first] = grouped[new_partner]
+            elif (first in grouped.keys() and new_partner not in grouped.keys()):
+                grouped[new_partner] = grouped[first]
+            # If both already belong to a different group -> merge:
+            elif (first in grouped.keys() and new_partner in grouped.keys()):
+                # Transcribe all grouped[first]:
+                for enzyme in correlating_enzymes:
+                    if enzyme in grouped.keys():
+                        if grouped[enzyme] == grouped[first]:                
+                            grouped[enzyme] = grouped[new_partner]
+            # If none belong to any group -> create new:
+            else:
+                grouped[first] = set_counter
+                grouped[new_partner] = set_counter
+                set_counter += 1
 
+# Put in correct order:
+
+grouping = {}
+groups = set(grouped.values())
+
+for group_number in groups:
+    grouping[group_number] = []
+    
+for enzyme in correlating_enzymes:
+    grouping[grouped[enzyme]].append(enzyme)
+    
+# Correct for deletion of in-between group indeces:
+
+counter = 0
+    
+for i in list(grouping.keys()):
+    grouping[counter] = grouping.pop(i)
+    counter += 1
+   
+print(grouping)
