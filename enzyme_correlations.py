@@ -18,7 +18,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 plot_1d_data = False
-plot_only_lt = True
+plot_only_lt = False
 
 # Import data:
 
@@ -131,14 +131,17 @@ for i in range(len(enzyme_matrix_columns)):
     
 binsize = 0.05
 
-hist_axis = np.arange(-1, 1.1, binsize)
+hist_axis = np.arange(-1, 1.05, binsize)
 
 plt.figure()
 
-hist = plt.hist(hist_list, bins=hist_axis, histtype='stepfilled')
-plt.xticks(hist_axis)
-plt.yticks(np.arange(0, 25, 2))
+N, bins, patches = plt.hist(hist_list, bins=hist_axis, color='steelblue', ec='k')
+for i in range(len(patches)-3, len(patches)):
+    patches[i].set_facecolor('indianred')
+plt.xticks(hist_axis[::2])
+# plt.yticks(np.arange(0, 25, 2))
 plt.grid(True)
+plt.xlim([-1,1])
 plt.grid(color='black', linestyle=':', linewidth=0.25)
 plt.xlabel('Correlation of activity between enzyme pairs')
 plt.ylabel('Occurrence')
@@ -147,46 +150,12 @@ plt.show()
 
 #%%
 
-# cutoff = 0.85
+# cutoff = 0.85 # -» slider
 
-# grouping = []
 
-# for i in range(len(enzyme_matrix_columns)):
-#     for j in range(len(enzyme_matrix_columns)):
-#         if i > j:
-#             if enzyme_correlation_matrix[i][j] >= cutoff:
-#                 grouping.append((i, j))
-                
-# # for i in range(len(grouping)): print(enzyme_correlation_matrix[grouping[i]])
-
-# grouped_pairs = []       
-# grouped_pairs_decoupled = []
-    
-
-# for i in range(len(grouping)):
-#     p1, p2 = grouping[i]
-#     grouped_pairs.append((enzyme_list[p1].name, enzyme_list[p2].name))
-    
-# g1 = set()
-# g2 = set()
-# g3 = set()
-# g4 = set()
-
-# g1.add(('CYP2A7',))
-# g2.add(('CYP2D6',))
-# g3.add(('CYP3A4',))
-# g4.add(('CYP3A43',))
-
-# sets = [g1, g2, g3, g4]
 
 # def corr_check(enzyme1, enzyme2):
-#     correl_boolean = False
-#     for i in range(len(grouped_pairs)):
-#         if grouped_pairs[i] == (enzyme1, enzyme2) or grouped_pairs[i] == (enzyme2, enzyme1):
-#             correl_boolean = True
-#         elif enzyme1 == enzyme2:
-#             correl_boolean = True
-#     return correl_boolean
+#     if corr(enzyme1, enzyme2) 
 
 # for i in range(len(grouped_pairs)):
 #     for j in (0,1):
