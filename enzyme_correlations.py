@@ -24,17 +24,17 @@ USER INPUT
 For version v2.1 specify future GUI input here
 """
 # Specify directory that holds the data:
-filepath = '/home/jp/Documents/prog/pa/data.csv'
+# datapath = '/home/jp/Documents/prog/pa/data.csv'
 
 """
 PRIVATE METHODS
 """
 
-def import_data(filepath):
+def import_data(datapath):
 
     enzyme_names = []
     
-    with open(filepath, mode='r') as csv_file:
+    with open(datapath, mode='r') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=';')
         line_count = 0
         for row in csv_reader:
@@ -229,107 +229,42 @@ def gui():
 
     # Create parent frame:
     root = tk.Tk()
-    root.title('1D Data Selection Tool')
+    root.title('Enzyme Activity Correlator')
 
     # Create children frames:
     mainframe = ttk.Frame(root, padding=(3,3,12,12))
-    loadframe = ttk.Frame(mainframe, borderwidth=5, relief="ridge", width=200, height=100)
-    plotframe = ttk.Frame(mainframe, borderwidth=5, relief="sunken", width=200, height=100)
-    setframe = ttk.Frame(mainframe, borderwidth=5, relief="ridge", width=200, height=100)
+    loadframe = ttk.Frame(mainframe, borderwidth=5, width=200, height=100)
 
     """ Create mainframe widgets: """
+    
+    def load_data_callback():
+        from tkinter import filedialog as fd
+        datapath = fd.askopenfilename()
+        return datapath
+    
+    def plot_correlation_data_callback():
+        datapath = load_data_callback
+        df, enzyme_list = import_data(datapath)
+        enzyme_correlation_matrix, enzyme_matrix_columns = compute_correlation_matrix(enzyme_list)
+        plot_correlation_matrix(enzyme_correlation_matrix, enzyme_list, enzyme_matrix_columns)
+    
     # Create save data button:
-    save_data_button = ttk.Button(mainframe, text='Save Data')
+    plot_correlation_matrix_button = ttk.Button(mainframe, text='Plot Correlation Matrix', command=plot_correlation_data_callback)
 
     """ Create loadframe widgets: """
-    # Create entry widget for datapath:
-    datapath_namelbl = ttk.Label(loadframe, text="Path to data folder")
-    datapath = ttk.Entry(loadframe, width=35)
+
+
 
     # Create load data button:
-    load_data_button = ttk.Button(loadframe, text='Load Data')
-
-    """ Create plotframe widgets: """
-    # Load data placeholder image:
-    from PIL import Image, ImageTk
-    data_placeholder = ImageTk.PhotoImage(Image.open('/home/jp/Documents/prog/work/data_maker_1d/data_placeholder.png'))
-    # panel = tk.Label(root, image = data_placeholder)
-    img = tk.Label(plotframe, image=data_placeholder)
-    img.image = data_placeholder
-    img.place(x=0, y=0)
-
-    """ Create setframe widgets: """
-    # Create fluctuation percentage input:
-    set_fluct = ttk.Button(setframe, text='Set Fluctuation Percentage')
-    fluct_value = ttk.Entry(setframe)
-
-    # Create user defined central number input:
-    user_def = tk.StringVar()
-    check = ttk.Checkbutton(setframe, text='User defined central number', variable=user_def)
-    user_def.set(False)
-    user_def_value = ttk.Entry(setframe)
-
-    # Create statistics labels:
-    atom_number = ttk.Label(setframe, text="Mean number of atoms: 941")
-    file_number = ttk.Label(setframe, text="Total number of files: 86")
-    files_sel = ttk.Label(setframe, text="Files selected: 57")
-
-    # Create offset entries
-    offset_x_lbl = ttk.Label(setframe, text="Offset X")
-    offset_x_value = ttk.Entry(setframe)
-    offset_y_lbl = ttk.Label(setframe, text="Offset Y")
-    offset_y_value = ttk.Entry(setframe)
-    offset_z_lbl = ttk.Label(setframe, text="Offset Z")
-    offset_z_value = ttk.Entry(setframe)
-
-    # Create Data ID and Date entries
-    data_id_lbl = ttk.Label(setframe, text="Data Identifier")
-    data_id_value = ttk.Entry(setframe)
-    date_lbl = ttk.Label(setframe, text="Date")
-    date_value = ttk.Entry(setframe)
-
-    # Create RF parameter entries
-    rf_power_lbl = ttk.Label(setframe, text="RF Power")
-    rf_power_value = ttk.Entry(setframe)
-    rf_duration_lbl = ttk.Label(setframe, text="RF Duration")
-    rf_duration_value = ttk.Entry(setframe)
+    load_data_button = ttk.Button(loadframe, text='Load Data', command=load_data_callback)
 
     """ Mainframe grid management: """
     mainframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
-    save_data_button.grid(column=0, row=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+    plot_correlation_matrix_button.grid(column=0, row=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
 
     """ Loadframe grid management: """
     loadframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
-    datapath_namelbl.grid(column=0, row=0, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    datapath.grid(column=1, row=0, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
     load_data_button.grid(column=2, row=0, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-
-    """ Plotframe grid management: """
-    plotframe.grid(column=0, row=1, sticky=(tk.N, tk.S, tk.E, tk.W))
-
-    """ Setframe grid management: """
-    setframe.grid(column=1, row=0, rowspan=3, sticky=(tk.N, tk.S, tk.E, tk.W))
-    set_fluct.grid(column=0, row=0, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    fluct_value.grid(column=0, row=1, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    check.grid(column=0, row=2, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    user_def_value.grid(column=0, row=3, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    atom_number.grid(column=0, row=4, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    file_number.grid(column=0, row=5, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    files_sel.grid(column=0, row=6, columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_x_lbl.grid(column=0, row=7, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_x_value.grid(column=1, row=7, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_y_lbl.grid(column=0, row=8, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_y_value.grid(column=1, row=8, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_z_lbl.grid(column=0, row=9, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    offset_z_value.grid(column=1, row=9, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    data_id_lbl.grid(column=0, row=10, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    data_id_value.grid(column=1, row=10, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    date_lbl.grid(column=0, row=11, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    date_value.grid(column=1, row=11, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    rf_power_lbl.grid(column=0, row=12, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    rf_power_value.grid(column=1, row=12, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    rf_duration_lbl.grid(column=0, row=13, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-    rf_duration_value.grid(column=1, row=13, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
 
     # Handle window resizing:
     root.columnconfigure(0, weight=1)
@@ -347,13 +282,13 @@ PUBLIC METHODS
 def main():
     ''' Main loop
     '''
-    df, enzyme_list = import_data(filepath)
-    enzyme_correlation_matrix, enzyme_matrix_columns = compute_correlation_matrix(enzyme_list)
-    plot_correlation_matrix(enzyme_correlation_matrix, enzyme_list, enzyme_matrix_columns)
-    hist_list, hist_axis = compute_histogram(enzyme_matrix_columns, enzyme_correlation_matrix)
-    plot_histogram(hist_list, hist_axis)
-    grouping = sort_into_groups(enzyme_list, df)
-    # gui()
+    # df, enzyme_list = import_data(datapath)
+    # enzyme_correlation_matrix, enzyme_matrix_columns = compute_correlation_matrix(enzyme_list)
+    # plot_correlation_matrix(enzyme_correlation_matrix, enzyme_list, enzyme_matrix_columns)
+    # hist_list, hist_axis = compute_histogram(enzyme_matrix_columns, enzyme_correlation_matrix)
+    # plot_histogram(hist_list, hist_axis)
+    # grouping = sort_into_groups(enzyme_list, df)
+    gui()
 
 """
 EXECUTION
