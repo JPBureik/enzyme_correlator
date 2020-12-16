@@ -225,6 +225,8 @@ class EnzymeCorrelatorGUI:
             a = str(v)
             b = a[1:-1].replace("'", '')
             grouping_display += '\n' + "{:<8} {:<15}".format(k, b)
+        # Clear before inserting new text to avoid overflow:
+        self.grouping_label.delete('1.0', tk.END)
         self.grouping_label.insert(tk.END, grouping_display)
         
     def plot_correlation_data_callback(self):
