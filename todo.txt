@@ -1,8 +1,0 @@
-- dreiecksform ohne diagonale
-- histogramm korrelationen vs anzahl der enzyme
-- damit gruppierung von enzymen mit paarweiseer korrelation über mindestwert
-
-
-- x-Achse hist von -1 bis 1, kein weißer Raum, y-Achse
-- Beschreibung: Korrelationsmatrix -» Gruppen
-- Caption hist
