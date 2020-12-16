@@ -42,6 +42,7 @@ class EnzymeCorrelatorGUI:
         self.plot_correlation_matrix_button = ttk.Button(self.mainframe, text='Plot Correlation Matrix', command=self.plot_correlation_data_callback)
         self.plot_histogram_button = ttk.Button(self.mainframe, text='Plot Histogram', command=self.plot_histogram_button_callback)
         self.quit_button = ttk.Button(self.mainframe, text='Quit', command=self.quit_button_callback)
+        self.grouping_label = tk.Text(root, height=10, width=150)
         
         # Mainframe grid management:
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
@@ -50,6 +51,7 @@ class EnzymeCorrelatorGUI:
         self.plot_correlation_matrix_button.grid(column=0, row=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
         self.plot_histogram_button.grid(column=0, row=3, sticky=(tk.N, tk.E, tk.W), pady=(5,0), padx=5)
         self.quit_button.grid(column=0, row=4, sticky=(tk.N, tk.E, tk.W), pady=(5,0), padx=5)
+        self.grouping_label.grid(column=1, row=0, columnspan=5, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)        
         
         # Disable buttons until data has been loaded:
         self.show_grouping_button["state"] = tk.DISABLED
@@ -223,9 +225,7 @@ class EnzymeCorrelatorGUI:
             a = str(v)
             b = a[1:-1].replace("'", '')
             grouping_display += '\n' + "{:<8} {:<15}".format(k, b)
-        grouping_label = tk.Text(root, height=len(self.grouping.keys())+1, width=150)
-        grouping_label.grid(column=1, row=0, columnspan=5, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-        grouping_label.insert(tk.END, grouping_display)
+        self.grouping_label.insert(tk.END, grouping_display)
         
     def plot_correlation_data_callback(self):
         
