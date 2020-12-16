@@ -3,7 +3,7 @@
 """
 Created on Wed Nov 25 15:34:36 2020
 
-@author: jp
+@author: JP Bureik
 
 This script calculates the correlation matrix for the given enzyme activity
 with respect to the substrates and plots the result for graphical quantitative
