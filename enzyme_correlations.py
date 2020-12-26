@@ -231,7 +231,8 @@ class EnzymeCorrelatorGUI:
     """
 
     def load_data_callback(self):
-        self.datapath = tk.filedialog.askopenfilename()
+        self.datapath = tk.filedialog.askopenfilename(
+            filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
         self.import_data()
         self.compute_correlation_matrix()
         self.compute_histogram()
