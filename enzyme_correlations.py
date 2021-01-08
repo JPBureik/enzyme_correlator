@@ -36,42 +36,67 @@ class EnzymeCorrelatorGUI:
 
         # Ininitialize frame style:
         self.framestyle = ttk.Style()
-        self.framestyle.configure('TFrame', background='red')
+        self.framestyle.configure('TFrame', background='white')
 
         # Create frames:
-        self.mainframe = ttk.Frame(self.root, padding=(0, 0, 12, 12))
+        self.mainframe = ttk.Frame(self.root, padding=(5, 5, 12, 12))
+        self.buttonframe = ttk.Frame(self.root, padding=(5, 5, 12, 12))
+        self.textdisplayframe = ttk.Frame(self.root, padding=(5, 5, 12, 12))
+        self.plotframe = ttk.Frame(self.root, padding=(5, 5, 12, 12))
 
-        # Mainframe widgets:
+        # StringVars:
+
+        self.csv_separator = tk.StringVar(self.buttonframe, "1")
+
+        # Buttonframe widgets:
         self.load_data_button = ttk.Button(
-            self.mainframe, text='Load Data', command=self.load_data_callback)
-        self.show_grouping_button = ttk.Button(
-            self.mainframe, text='Show Enzyme Grouping', command=self.show_grouping_button_callback)
-        self.plot_correlation_matrix_button = ttk.Button(
-            self.mainframe, text='Plot Correlation Matrix', command=self.plot_correlation_data_callback)
-        self.plot_histogram_button = ttk.Button(
-            self.mainframe, text='Plot Histogram', command=self.plot_histogram_button_callback)
-        self.save_fig_button = ttk.Button(
-            self.mainframe, text='Save Figure', command=self.save_fig_button_callback)
-        self.quit_button = ttk.Button(self.mainframe, text='Quit',
+            self.buttonframe, text='Load Data', command=self.load_data_callback)
+        self.quit_button = ttk.Button(self.buttonframe, text='Quit',
                                       command=self.quit_button_callback)
-        self.grouping_label = tk.Text(root, height=10, width=150)
+        self.csv_options_label = ttk.Label(self.buttonframe, text='CSV Value Separator:')
+        self.csv_separator_semicolon = ttk.Radiobutton(
+            self.buttonframe, text=';', variable=self.csv_separator, value=';')
+        self.csv_separator_comma = ttk.Radiobutton(
+            self.buttonframe, text=',', variable=self.csv_separator, value=',')
+        self.show_grouping_button = ttk.Button(
+            self.buttonframe, text='Show Enzyme Grouping', command=self.show_grouping_button_callback)
+        self.plot_correlation_matrix_button = ttk.Button(
+            self.buttonframe, text='Plot Correlation Matrix', command=self.plot_correlation_data_callback)
+        self.plot_histogram_button = ttk.Button(
+            self.buttonframe, text='Plot Histogram', command=self.plot_histogram_button_callback)
+        self.save_fig_button = ttk.Button(
+            self.buttonframe, text='Save Figure', command=self.save_fig_button_callback)
+
+        # Textdisplayframe widgets:
+        self.grouping_label = tk.Text(self.textdisplayframe, height=13, width=140)
 
         # Mainframe grid management:
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
-        self.load_data_button.grid(column=0, row=0, sticky=(
+
+        # Buttonframe grid management:
+        self.buttonframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
+        self.csv_options_label.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
+        self.csv_separator_semicolon.grid(column=0, row=1, sticky=(tk.N, tk.S, tk.E, tk.W))
+        self.csv_separator_comma.grid(column=0, row=2, sticky=(tk.N, tk.S, tk.E, tk.W))
+        self.load_data_button.grid(column=0, row=3, sticky=(
             tk.N, tk.E, tk.W), pady=5, padx=5)
-        self.show_grouping_button.grid(column=0, row=1, sticky=(
+        self.quit_button.grid(column=0, row=4, sticky=(
+            tk.N, tk.E, tk.W), pady=(5, 0), padx=5)
+        self.show_grouping_button.grid(column=1, row=0, sticky=(
             tk.N, tk.E, tk.W), pady=5, padx=5)
         self.plot_correlation_matrix_button.grid(
-            column=0, row=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
-        self.plot_histogram_button.grid(column=0, row=3, sticky=(
+            column=1, row=1, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+        self.plot_histogram_button.grid(column=1, row=2, sticky=(
             tk.N, tk.E, tk.W), pady=(5, 0), padx=5)
-        self.save_fig_button.grid(column=0, row=4, sticky=(
+        self.save_fig_button.grid(column=1, row=3, sticky=(
             tk.N, tk.E, tk.W), pady=(5, 0), padx=5)
-        self.quit_button.grid(column=0, row=5, sticky=(
-            tk.N, tk.E, tk.W), pady=(5, 0), padx=5)
-        self.grouping_label.grid(column=1, row=0, columnspan=5,
-                                 sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+
+        # Textdisplayframe grid management:
+        self.textdisplayframe.grid(column=1, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
+        self.grouping_label.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W), pady=5, padx=5)
+
+        # Plotframe grid management:
+        self.plotframe.grid(column=0, row=1, columnspan=2, sticky=(tk.N, tk.S, tk.E))
 
         # Disable buttons until data has been loaded:
         self.show_grouping_button["state"] = tk.DISABLED
@@ -82,11 +107,16 @@ class EnzymeCorrelatorGUI:
         # Handle window resizing:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=0)
-        self.mainframe.columnconfigure(0, weight=3)
+        self.mainframe.columnconfigure(0, weight=0)
+        self.mainframe.columnconfigure(1, weight=0)
+        self.mainframe.rowconfigure(0, weight=0)
         self.mainframe.rowconfigure(1, weight=0)
-        self.mainframe.rowconfigure(2, weight=0)
-        self.mainframe.rowconfigure(3, weight=0)
-        self.mainframe.rowconfigure(4, weight=0)
+        self.buttonframe.columnconfigure(0, weight=0)
+        self.buttonframe.rowconfigure(0, weight=0)
+        self.textdisplayframe.columnconfigure(0, weight=0)
+        self.textdisplayframe.rowconfigure(0, weight=0)
+        self.plotframe.columnconfigure(0, weight=0)
+        self.plotframe.rowconfigure(0, weight=0)
 
     """
     DATA ANALYSIS
@@ -255,7 +285,7 @@ class EnzymeCorrelatorGUI:
 
     def plot_correlation_data_callback(self):
 
-        self.fig = Figure(figsize=(19, 9))
+        self.fig = Figure(figsize=(14.2, 5.4))
         ax = self.fig.add_subplot(111)
         im = ax.imshow(self.enzyme_correlation_matrix, aspect='auto', cmap='bwr')
         im.set_clim(-1, 1)
@@ -282,12 +312,15 @@ class EnzymeCorrelatorGUI:
                         va='center', color=color, size=9)
         ax.figure.colorbar(im, ax=ax, format='% .2f')
 
+        # Eliminate whitespace for more efficient screen usage:
+        self.fig.set_tight_layout(1)
+
         try:
             self.canvas.get_tk_widget().grid_forget()
         except AttributeError:
             pass
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas.get_tk_widget().grid(columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.plotframe)
+        self.canvas.get_tk_widget().grid(sticky=(tk.W), pady=5, padx=5)
         self.canvas.draw()
 
         # Enable save_fig_button:
@@ -295,7 +328,10 @@ class EnzymeCorrelatorGUI:
 
     def plot_histogram_button_callback(self):
 
-        self.fig = Figure(figsize=(20, 5))
+        framewidth_inches = self.root.winfo_screenmmwidth()/25.4
+        frameheight_inches = self.root.winfo_screenmmheight()/25.4
+
+        self.fig = Figure(figsize=(0.71*framewidth_inches, 0.355*frameheight_inches))
         ax = self.fig.add_subplot(111)
 
         N, bins, patches = ax.hist(self.hist_list, bins=self.hist_axis, color='steelblue', ec='k')
@@ -309,13 +345,36 @@ class EnzymeCorrelatorGUI:
         ax.set_xlabel('Correlation of activity between enzyme pairs')
         ax.set_ylabel('Occurrence')
 
+        # Eliminate whitespace for more efficient screen usage:
+        self.fig.set_tight_layout(1)
+
         try:
             self.canvas.get_tk_widget().grid_forget()
         except AttributeError:
             pass
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas.get_tk_widget().grid(columnspan=2, sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.plotframe)
+        self.canvas.get_tk_widget().grid(sticky=(tk.E), pady=5, padx=5)
         self.canvas.draw()
+
+        # Scrollbar:
+        # self.hbar = tk.Scrollbar(self.plotframe, orient=tk.HORIZONTAL)
+        # self.vbar = tk.Scrollbar(self.plotframe, orient=tk.VERTICAL)
+
+        # self.canvas = FigureCanvasTkAgg(self.fig, master=self.plotframe)
+        # self.canvas.get_tk_widget().config(bg='#FFFFFF', scrollregion=(0, 0, 2000, 1000))
+        # self.canvas.get_tk_widget().config(width=1000, height=500)
+        # self.canvas.get_tk_widget().config(xscrollcommand=self.hbar.set, yscrollcommand=self.vbar.set)
+        # self.canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+
+        # self.hbar.grid(row=1, column=0, sticky=tk.W+tk.E)
+        # self.hbar.config(command=self.canvas.get_tk_widget().xview)
+        # self.vbar.grid(row=0, column=1, sticky=tk.N+tk.S)
+        # self.vbar.config(command=self.canvas.get_tk_widget().yview)
+
+        # self.plotframe.config(width=100, height=100)  # this has no effect
+
+        # self.figscrollbar.grid(row=0, column=1, sticky=tk.N+tk.S)
+        # self.figscrollbar.config(command=self.canvas.get_tk_widget().yview)
 
         # Enable save_fig_button:
         self.save_fig_button["state"] = tk.NORMAL
