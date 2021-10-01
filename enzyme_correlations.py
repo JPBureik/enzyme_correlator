@@ -36,7 +36,7 @@ class EnzymeCorrelatorGUI:
 
         # Ininitialize frame style:
         self.framestyle = ttk.Style()
-        self.framestyle.configure('TFrame', background='red')
+        self.framestyle.configure('TFrame', background='white')
 
         # Create frames:
         self.mainframe = ttk.Frame(self.root, padding=(0, 0, 12, 12))
