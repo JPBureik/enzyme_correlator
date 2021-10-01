@@ -164,7 +164,7 @@ class EnzymeCorrelatorGUI:
 
     def sort_into_groups(self):
 
-        self.cutoff = 0.85  # inclusive; -> slider
+        self.cutoff = 0.7  # inclusive; -> slider
 
         def corr_check(enzyme1, enzyme2):
             if (enzyme1.corr(enzyme2) >= self.cutoff and enzyme1.name != enzyme2.name):
@@ -299,7 +299,7 @@ class EnzymeCorrelatorGUI:
         ax = self.fig.add_subplot(111)
 
         N, bins, patches = ax.hist(self.hist_list, bins=self.hist_axis, color='steelblue', ec='k')
-        for i in range(len(patches)-3, len(patches)):
+        for i in range(len(patches)-6, len(patches)):  # This should be inferred from self.cutoff
             patches[i].set_facecolor('indianred')
         ax.set_xticks(self.hist_axis[::2])
         # plt.yticks(np.arange(0, 25, 2))
