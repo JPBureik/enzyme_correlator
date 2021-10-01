@@ -41,6 +41,13 @@ class EnzymeCorrelatorGUI:
         # Create frames:
         self.mainframe = ttk.Frame(self.root, padding=(0, 0, 12, 12))
 
+        # StringVars:
+        self.cutoff = tk.StringVar(self.mainframe, '0.85')
+        def update_cutoff(value):
+            self.sort_into_groups()
+            self.show_grouping_button_callback()
+            self.plot_histogram_button_callback()
+
         # Mainframe widgets:
         self.load_data_button = ttk.Button(
             self.mainframe, text='Load Data', command=self.load_data_callback)
@@ -55,6 +62,9 @@ class EnzymeCorrelatorGUI:
         self.quit_button = ttk.Button(self.mainframe, text='Quit',
                                       command=self.quit_button_callback)
         self.grouping_label = tk.Text(root, height=10, width=150)
+        self.cutoff_slider = tk.Scale(
+            root, from_=-1, to=1, resolution = 0.01, variable=self.cutoff,
+            command=update_cutoff, orient=tk.HORIZONTAL, label='Set grouping cutoff')
 
         # Mainframe grid management:
         self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.E, tk.W))
@@ -72,12 +82,15 @@ class EnzymeCorrelatorGUI:
             tk.N, tk.E, tk.W), pady=(5, 0), padx=5)
         self.grouping_label.grid(column=1, row=0, columnspan=5,
                                  sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
+        self.cutoff_slider.grid(column=1, row=1, columnspan=5,
+                                 sticky=(tk.N, tk.E, tk.W), pady=5, padx=5)
 
         # Disable buttons until data has been loaded:
         self.show_grouping_button["state"] = tk.DISABLED
         self.plot_correlation_matrix_button["state"] = tk.DISABLED
         self.plot_histogram_button["state"] = tk.DISABLED
         self.save_fig_button["state"] = tk.DISABLED
+        self.cutoff_slider["state"] = tk.DISABLED
 
         # Handle window resizing:
         self.root.columnconfigure(0, weight=1)
@@ -164,10 +177,8 @@ class EnzymeCorrelatorGUI:
 
     def sort_into_groups(self):
 
-        self.cutoff = 0.7  # inclusive; -> slider
-
         def corr_check(enzyme1, enzyme2):
-            if (enzyme1.corr(enzyme2) >= self.cutoff and enzyme1.name != enzyme2.name):
+            if (enzyme1.corr(enzyme2) >= float(self.cutoff.get()) and enzyme1.name != enzyme2.name):
                 return True
             else:
                 return False
@@ -241,6 +252,7 @@ class EnzymeCorrelatorGUI:
         self.show_grouping_button["state"] = tk.NORMAL
         self.plot_correlation_matrix_button["state"] = tk.NORMAL
         self.plot_histogram_button["state"] = tk.NORMAL
+        self.cutoff_slider["state"] = tk.NORMAL
 
     def show_grouping_button_callback(self):
         grouping_display = ''
@@ -299,7 +311,8 @@ class EnzymeCorrelatorGUI:
         ax = self.fig.add_subplot(111)
 
         N, bins, patches = ax.hist(self.hist_list, bins=self.hist_axis, color='steelblue', ec='k')
-        for i in range(len(patches)-6, len(patches)):  # This should be inferred from self.cutoff
+        grouped_range = round((1 - float(self.cutoff.get())) / 0.05)
+        for i in range(len(patches)-grouped_range, len(patches)):  # This should be inferred from self.cutoff
             patches[i].set_facecolor('indianred')
         ax.set_xticks(self.hist_axis[::2])
         # plt.yticks(np.arange(0, 25, 2))
