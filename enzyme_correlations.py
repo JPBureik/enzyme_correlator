@@ -46,7 +46,15 @@ class EnzymeCorrelatorGUI:
         def update_cutoff(value):
             self.sort_into_groups()
             self.show_grouping_button_callback()
-            self.plot_histogram_button_callback()
+            # Update histogram:
+            grouped_range = round((1 - float(self.cutoff.get())) / 0.05)
+            for i in range(len(self.patches)):
+                if i >= len(self.patches)-grouped_range  :
+                    self.patches[i].set_facecolor('indianred')
+                else:
+                    self.patches[i].set_facecolor('steelblue')
+            self.canvas.draw()
+            
 
         # Mainframe widgets:
         self.load_data_button = ttk.Button(
@@ -310,10 +318,10 @@ class EnzymeCorrelatorGUI:
         self.fig = Figure(figsize=(20, 5))
         ax = self.fig.add_subplot(111)
 
-        N, bins, patches = ax.hist(self.hist_list, bins=self.hist_axis, color='steelblue', ec='k')
+        N, bins, self.patches = ax.hist(self.hist_list, bins=self.hist_axis, color='steelblue', ec='k')
         grouped_range = round((1 - float(self.cutoff.get())) / 0.05)
-        for i in range(len(patches)-grouped_range, len(patches)):  # This should be inferred from self.cutoff
-            patches[i].set_facecolor('indianred')
+        for i in range(len(self.patches)-grouped_range, len(self.patches)):  # This should be inferred from self.cutoff
+            self.patches[i].set_facecolor('indianred')
         ax.set_xticks(self.hist_axis[::2])
         # plt.yticks(np.arange(0, 25, 2))
         ax.grid(True)
@@ -324,6 +332,7 @@ class EnzymeCorrelatorGUI:
 
         try:
             self.canvas.get_tk_widget().grid_forget()
+            self.canvas.update_idletasks()
         except AttributeError:
             pass
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
