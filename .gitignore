@@ -57,3 +57,6 @@ docs/_build/
 
 # Excel documents:
 *.xls
+
+# Test data:
+data/
