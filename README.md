@@ -14,6 +14,10 @@ This software was developed as supplementary material for [Sharma et al. (2021)]
 ## Installation
 
 ```bash
+git clone https://github.com/JPBureik/enzyme_correlator.git
+cd enzyme_correlator
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
