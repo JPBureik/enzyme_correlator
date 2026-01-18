@@ -9,7 +9,7 @@
 
 Correlation matrix calculator for enzyme activity analysis. This tool calculates the correlation matrix for enzyme activity with respect to substrates and plots the result for graphical quantitative analysis.
 
-This software was developed as supplementary material for [Bureik et al. (2021)](https://pubmed.ncbi.nlm.nih.gov/33909340/).
+This software was developed as supplementary material for [Sharma et al. (2021)](https://pubmed.ncbi.nlm.nih.gov/33909340/).
 
 ## Installation
 
@@ -104,4 +104,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 If you use this software in your research, please cite:
 
-> Bureik, J.-P., et al. (2021). Conversion of five proluciferin esters by human cytochrome P450 enzymes. *Biotechnology Journal*. https://pubmed.ncbi.nlm.nih.gov/33909340/
+> Sharma et al. (2021). Conversion of five proluciferin esters by human cytochrome P450 enzymes. *Biotechnology Journal*. https://pubmed.ncbi.nlm.nih.gov/33909340/
