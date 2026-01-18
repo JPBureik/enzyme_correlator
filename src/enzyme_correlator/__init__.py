@@ -71,7 +71,7 @@ class EnzymeCorrelatorGUI:
                 else:
                     self.patches[i].set_facecolor("steelblue")
             if self.canvas is not None:
-                self.canvas.draw()
+                self.canvas.draw()  # type: ignore[no-untyped-call]
 
         self.load_data_button = ttk.Button(
             self.mainframe, text="Load Data", command=self.load_data_callback
@@ -316,10 +316,12 @@ class EnzymeCorrelatorGUI:
         ax.figure.colorbar(im, ax=ax, format="% .2f")
 
         if self.canvas is not None:
-            self.canvas.get_tk_widget().grid_forget()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas.get_tk_widget().grid(columnspan=2, sticky=tk.N + tk.E + tk.W, pady=5, padx=5)
-        self.canvas.draw()
+            self.canvas.get_tk_widget().grid_forget()  # type: ignore[no-untyped-call]
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)  # type: ignore[no-untyped-call]
+        self.canvas.get_tk_widget().grid(  # type: ignore[no-untyped-call]
+            columnspan=2, sticky=tk.N + tk.E + tk.W, pady=5, padx=5
+        )
+        self.canvas.draw()  # type: ignore[no-untyped-call]
 
         self.save_fig_button["state"] = tk.NORMAL
 
@@ -334,7 +336,7 @@ class EnzymeCorrelatorGUI:
             color="steelblue",
             ec="k",
         )
-        self.patches = list(patches)
+        self.patches = list(patches)  # type: ignore[arg-type]
         grouped_range = round((1 - float(self.cutoff.get())) / 0.05)
         for i in range(len(self.patches) - grouped_range, len(self.patches)):
             self.patches[i].set_facecolor("indianred")
@@ -346,10 +348,12 @@ class EnzymeCorrelatorGUI:
         ax.set_ylabel("Occurrence")
 
         if self.canvas is not None:
-            self.canvas.get_tk_widget().grid_forget()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        self.canvas.get_tk_widget().grid(columnspan=2, sticky=tk.N + tk.E + tk.W, pady=5, padx=5)
-        self.canvas.draw()
+            self.canvas.get_tk_widget().grid_forget()  # type: ignore[no-untyped-call]
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)  # type: ignore[no-untyped-call]
+        self.canvas.get_tk_widget().grid(  # type: ignore[no-untyped-call]
+            columnspan=2, sticky=tk.N + tk.E + tk.W, pady=5, padx=5
+        )
+        self.canvas.draw()  # type: ignore[no-untyped-call]
 
         self.save_fig_button["state"] = tk.NORMAL
 
