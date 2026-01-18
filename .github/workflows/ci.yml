@@ -21,7 +21,7 @@ jobs:
       - name: Lint with ruff
         run: ruff check src/
       - name: Type check with mypy
-        run: mypy src/
+        run: mypy --strict src/
 
   test:
     runs-on: ${{ matrix.os }}
