@@ -304,6 +304,157 @@ class TestMainFunction:
             mock_tk.Tk.return_value.mainloop.assert_called_once()
 
 
+class TestPlotOnlyLowerTriangle:
+    """Tests for plot_only_lt flag behavior."""
+
+    def test_correlation_matrix_lower_triangle_only(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test that upper triangle is zeroed when plot_only_lt is True."""
+        gui_instance.datapath = sample_csv_file
+        gui_instance.plot_only_lt = True
+        gui_instance.import_data()
+        gui_instance.compute_correlation_matrix()
+
+        matrix = gui_instance.enzyme_correlation_matrix
+        n = len(gui_instance.enzyme_list)
+        for i in range(n):
+            for j in range(i + 1, n):
+                assert matrix[i][j] == 0.0
+
+
+class TestLoadDataCallback:
+    """Tests for load_data_callback method."""
+
+    def test_load_data_callback_with_file(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test load_data_callback loads data and enables buttons."""
+        with patch("enzyme_correlator.filedialog") as mock_dialog:
+            mock_dialog.askopenfilename.return_value = sample_csv_file
+            gui_instance.cutoff.get = MagicMock(return_value="0.85")
+
+            gui_instance.load_data_callback()
+
+            assert len(gui_instance.enzyme_list) == 4
+            assert gui_instance.enzyme_correlation_matrix.shape == (4, 4)
+
+    def test_load_data_callback_cancelled(self, gui_instance: EnzymeCorrelatorGUI) -> None:
+        """Test load_data_callback handles cancelled dialog."""
+        with patch("enzyme_correlator.filedialog") as mock_dialog:
+            mock_dialog.askopenfilename.return_value = ""
+
+            gui_instance.load_data_callback()
+
+            assert gui_instance.datapath == ""
+
+
+class TestPlotCallbacks:
+    """Tests for plotting callback methods."""
+
+    def test_plot_correlation_data_callback(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test plot_correlation_data_callback creates figure."""
+        gui_instance.datapath = sample_csv_file
+        gui_instance.cutoff.get = MagicMock(return_value="0.85")
+        gui_instance.import_data()
+        gui_instance.compute_correlation_matrix()
+
+        with patch("enzyme_correlator.FigureCanvasTkAgg") as mock_canvas:
+            mock_canvas_instance = MagicMock()
+            mock_canvas.return_value = mock_canvas_instance
+
+            gui_instance.plot_correlation_data_callback()
+
+            assert gui_instance.fig is not None
+            mock_canvas.assert_called_once()
+
+    def test_plot_correlation_data_with_existing_canvas(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test plot_correlation_data_callback replaces existing canvas."""
+        gui_instance.datapath = sample_csv_file
+        gui_instance.cutoff.get = MagicMock(return_value="0.85")
+        gui_instance.import_data()
+        gui_instance.compute_correlation_matrix()
+
+        old_canvas = MagicMock()
+        gui_instance.canvas = old_canvas
+
+        with patch("enzyme_correlator.FigureCanvasTkAgg") as mock_canvas:
+            mock_canvas.return_value = MagicMock()
+
+            gui_instance.plot_correlation_data_callback()
+
+            old_canvas.get_tk_widget().grid_forget.assert_called_once()
+
+    def test_plot_histogram_callback(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test plot_histogram_button_callback creates histogram."""
+        gui_instance.datapath = sample_csv_file
+        gui_instance.cutoff.get = MagicMock(return_value="0.85")
+        gui_instance.import_data()
+        gui_instance.compute_correlation_matrix()
+        gui_instance.compute_histogram()
+
+        with patch("enzyme_correlator.FigureCanvasTkAgg") as mock_canvas:
+            mock_canvas_instance = MagicMock()
+            mock_canvas.return_value = mock_canvas_instance
+
+            gui_instance.plot_histogram_button_callback()
+
+            assert gui_instance.fig is not None
+            mock_canvas.assert_called_once()
+
+    def test_plot_histogram_with_existing_canvas(
+        self, gui_instance: EnzymeCorrelatorGUI, sample_csv_file: str
+    ) -> None:
+        """Test plot_histogram_button_callback replaces existing canvas."""
+        gui_instance.datapath = sample_csv_file
+        gui_instance.cutoff.get = MagicMock(return_value="0.85")
+        gui_instance.import_data()
+        gui_instance.compute_correlation_matrix()
+        gui_instance.compute_histogram()
+
+        old_canvas = MagicMock()
+        gui_instance.canvas = old_canvas
+
+        with patch("enzyme_correlator.FigureCanvasTkAgg") as mock_canvas:
+            mock_canvas.return_value = MagicMock()
+
+            gui_instance.plot_histogram_button_callback()
+
+            old_canvas.get_tk_widget().grid_forget.assert_called_once()
+
+
+class TestSaveFigCallback:
+    """Tests for save_fig_button_callback method."""
+
+    def test_save_fig_callback_saves_file(self, gui_instance: EnzymeCorrelatorGUI) -> None:
+        """Test save_fig_button_callback saves figure."""
+        gui_instance.fig = MagicMock()
+
+        with patch("enzyme_correlator.filedialog") as mock_dialog:
+            mock_dialog.asksaveasfilename.return_value = "/tmp/test.png"
+
+            gui_instance.save_fig_button_callback()
+
+            gui_instance.fig.savefig.assert_called_once_with("/tmp/test.png")
+
+    def test_save_fig_callback_cancelled(self, gui_instance: EnzymeCorrelatorGUI) -> None:
+        """Test save_fig_button_callback handles cancelled dialog."""
+        gui_instance.fig = MagicMock()
+
+        with patch("enzyme_correlator.filedialog") as mock_dialog:
+            mock_dialog.asksaveasfilename.return_value = ""
+
+            gui_instance.save_fig_button_callback()
+
+            gui_instance.fig.savefig.assert_not_called()
+
+
 class TestModuleAttributes:
     """Tests for module-level attributes."""
 
